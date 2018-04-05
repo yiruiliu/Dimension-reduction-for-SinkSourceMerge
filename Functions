@@ -173,14 +173,16 @@ end;
 
 EqualityEliminationMain:=function(Equal,Amatrix,b,listofedge,qs_exec)
 	local AllEqual,Equalp_c,Amatrixp_b,A12,FVAL,AA,A1,b1,XF,XF1,pz0,
-	pz,X1,AA1,f,AT,Anew,addrow,addcolumn,bnew,XFVAL,rlist, s,rlist_dual;
+	pz,X1,AA1,f,AT,Anew,addrow,addcolumn,bnew,XFVAL,rlist, s,rlist_dual,numofiter;
 	AllEqual:=[];
 	A12:=EqualityEliminationinitialize(Equal,Amatrix,b,listofedge);
 	Equalp_c:=A12[1];
 	Amatrixp_b:=A12[2];
 	Append(AllEqual,Equalp_c);
 	FVAL:=0;
+	numofiter:=0;
 	while FVAL=0 do
+		numofiter:=numofiter+1;
 		AA:=EqualityEliminationEE(Equalp_c,Amatrixp_b);
 		A1:=ShallowCopy(AA);
 		b1:=-MatrixGetColumn(AA,Size(AA[1]));
