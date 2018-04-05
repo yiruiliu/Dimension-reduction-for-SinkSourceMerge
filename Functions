@@ -173,7 +173,7 @@ end;
 
 EqualityEliminationMain:=function(Equal,Amatrix,b,listofedge,qs_exec)
 	local AllEqual,Equalp_c,Amatrixp_b,A12,FVAL,AA,A1,b1,XF,XF1,pz0,
-	pz,X1,AA1;
+	pz,X1,AA1,f,AT,Anew,addrow,addcolumn,bnew,XFVAL,rlist, s,rlist_dual;
 	AllEqual:=[];
 	A12:=EqualityEliminationinitialize(Equal,Amatrix,b,listofedge);
 	Equalp_c:=A12[1];
@@ -185,10 +185,30 @@ EqualityEliminationMain:=function(Equal,Amatrix,b,listofedge,qs_exec)
 		A1:=ShallowCopy(AA);
 		b1:=-MatrixGetColumn(AA,Size(AA[1]));
 		A1:=MatrixRemoveColumn(A1,Size(A1[1]));
-		XF:=EqualityEliminationDetectfFullDim(A1,b1,qs_exec);
+		##
+		#XF:=EqualityEliminationDetectfFullDim(A1,b1,qs_exec);
+		f:=ZeroMutable([1..Size(A1[1])]);
+		Append(f,[1]);
+		addcolumn:=ZeroMutable([1..Size(A1)])+1;
+		Anew:=MatrixAddColumn(A1,addcolumn);
+		addrow:=ZeroMutable([1..Size(A1[1])]);
+		Append(addrow,[1]);
+		Anew:=ShallowCopy(Anew);
+		Append(Anew,[addrow]);
+		bnew:=ShallowCopy(b1);
+		Append(bnew,[1]);
+		rlist := LoadQSLP( f, Anew, bnew,[ ], qs_exec );
+		s := rlist[1];
+		SolveQSLP( s, [2] );
+		rlist := GetQSLPsol_primal( s );
+		XF:=[rlist[3],rlist[5]];
+		###
 		FVAL:=XF[1];
 		if FVAL=0 then
-			XF1:=EqualityEliminationDual(A1,b1,qs_exec);
+			##XF1:=EqualityEliminationDual(A1,b1,qs_exec);
+			rlist_dual := GetQSLPsol_dual( s );
+			XF1:=[rlist_dual[3],rlist_dual[5]];
+			###
 			X1:=XF1[2];
 			AA1:=MatrixAddColumn(A1,-b1);
 			pz0:=PositionsProperty(X1,IsZero);
