@@ -402,9 +402,9 @@ CombineVandEqual:=function(V,Equal,ncinstance3)
 	return VV;
 end;
 ####
-NCRateRegionOBForrMarginalEntropy:=function ( ncinstance, usesym, optargs )
+NCRateRegionOBForrMarginalEntropy:=function ( ncinstance, usesym, optargs,Anet,Cnet )
     local  rlist, A, b, linrows,Rlinrows,i, listofedge,Equal, G, rlist1, ineq, ineqorb, row, rrA, rrb, 
-    onemap, nslist, idx, nsrec, los, lolos, Oi, O, trans_ineq,conineq,A1,b1,AT,indi,AB;
+    onemap, nslist, idx, nsrec, los, lolos, Oi, O, trans_ineq,conineq,A1,b1,AT,indi,AB,nc;
     rlist := NCShannonBoundedForrMarginalEntropy( ncinstance );
     A := rlist[1];
     b := rlist[2];
@@ -486,5 +486,11 @@ NCRateRegionOBForrMarginalEntropy:=function ( ncinstance, usesym, optargs )
     for O  in Oi  do
         Append( trans_ineq, [ O[1] ] );
     od;
-    return [ trans_ineq, RRparse( ncinstance, trans_ineq ) ];
+    nc:=ShallowCopy(ncinstance);
+    if Anet=true then
+	 nc[3]:=ncinstance[3]+1;
+    elif Cnet=true then
+        nc[2]:=ncinstance[2]+1;
+    fi;
+    return [ trans_ineq, RRparse( nc, trans_ineq ) ];
 end;
