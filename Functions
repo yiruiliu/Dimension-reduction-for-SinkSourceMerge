@@ -442,6 +442,9 @@ NCRateRegionOBForrMarginalEntropy:=function ( ncinstance, usesym, optargs )
 			indi:=indi+1;
 		fi;
     od;
+    if Anet=true then
+	indi:=indi-1;
+    fi;
     A1:=RemoveZeroColumn(A1);
     ###### end of full-dimension
     rlist1 := symCHM( A1, b1, [], ncinstance[3]-indi, G, OnProjPts, OnProjIneq, false );
