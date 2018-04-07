@@ -159,11 +159,56 @@ EqualityEliminationEE:=function(Equal,A)
 	return AA;
 end;
 
-EqualityEliminationinitialize:=function(Equal,Amatrix,b,listofedge)
-	local Equalp,Amatrixp,Equalp_c,Amatrixp_b,aa,ET,AT;
+EqualityEliminationinitialize:=function(Equal,Amatrix,b,listofedge,Anet)
+	local Equalp,Amatrixp,Equalp_c,Amatrixp_b,aa,ET,AT,E5,E6,Vcommon,V5,V6,i,
+	vcommon,v5,v6;
 	Equalp:=matrixpermForEE(Equal,listofedge);
 	Amatrixp:=matrixpermForEE(Amatrix,listofedge);
-	aa:=ZeroMutable([1..Size(Equal)]);
+	##### add v1, v2, v3 for Anet
+	if Anet=true then
+		E6:=listofedge[Size(listofedge)];
+		E5:=listofedge[Size(listofedge)-1];
+		Vcommon:=ZeroMutable([1..Size(Equalp[1])]);
+		Vcommon[set2int([E5,E6])]:=1;
+		Vcommon[E5]:=-1;
+		Vcommon[E6]:=-1;
+		Vcommon:=Reversed(Vcommon);
+		Append(Vcommon,[0,0,1]);
+		V5:=ZeroMutable([1..Size(Equalp[1])]);
+		V5[E5]:=-1;
+		V5:=Reversed(V5);
+		Append(V5,[0,1,1]);
+		V6:=ZeroMutable([1..Size(Equalp[1])]);
+		V6[E6]:=-1;
+		Append(V6,[1,0,1]);
+		aa:=ZeroMutable([1..Size(Equalp)]);
+		for i in [1..3] do
+			Equalp:=MatrixAddColumn(Equalp,aa);
+		od;
+		Equalp:=ShallowCopy(Equalp);
+		Append(Equalp,[Vcommon]);
+		Append(Equalp,[V5]);
+		Append(Equalp,[V6]);
+		aa:=ZeroMutable([1..Size(Amatrixp)]);
+		for i in [1..3] do
+			Amatrixp:=MatrixAddColumn(Amatrixp,aa);
+		od;
+		vcommon:=ZeroMutable([1..Size(Amatrixp[1])]);
+		vcommon[Size(vcommon)]:=-1;
+	    Amatrixp:=ShallowCopy(Amatrixp);
+		Append(Amatrixp,[vcommon]);
+		Append(b,[0]);
+		v5:=ZeroMutable([1..Size(Amatrixp[1])]);
+		v5[Size(v5)-1]:=-1;
+		Append(Amatrixp,[v5]);
+		Append(b,[0]);
+		v6:=ZeroMutable([1..Size(Amatrixp[1])]);
+		v6[Size(v6)-2]:=-1;
+		Append(Amatrixp,[v6]);
+		Append(b,[0]);
+	fi;
+	####
+	aa:=ZeroMutable([1..Size(Equalp)]);
 	Equalp_c:=MatrixAddColumn(Equalp,aa);
 	Amatrixp_b:=MatrixAddColumn(Amatrixp,-b);
 	return [Equalp_c,Amatrixp_b];
@@ -171,11 +216,11 @@ end;
 
 
 
-EqualityEliminationMain:=function(Equal,Amatrix,b,listofedge,qs_exec)
+EqualityEliminationMain:=function(Equal,Amatrix,b,listofedge,qs_exec,Anet)
 	local AllEqual,Equalp_c,Amatrixp_b,A12,FVAL,AA,A1,b1,XF,XF1,pz0,
 	pz,X1,AA1,f,AT,Anew,addrow,addcolumn,bnew,XFVAL,rlist, s,rlist_dual,numofiter;
 	AllEqual:=[];
-	A12:=EqualityEliminationinitialize(Equal,Amatrix,b,listofedge);
+	A12:=EqualityEliminationinitialize(Equal,Amatrix,b,listofedge,Anet);
 	Equalp_c:=A12[1];
 	Amatrixp_b:=A12[2];
 	Append(AllEqual,Equalp_c);
